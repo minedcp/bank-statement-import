@@ -9,10 +9,12 @@ from odoo.addons.component.core import Component
 class EdiBankStatementImportProcess(Component):
     _name = "edi.input.process.bank.statement.import"
     _usage = "input.process"
-    _backend_type = "bk_sftp"
+    _backend_type = "bk_sftp_imp"
     _inherit = "edi.component.input.mixin"
 
     def process(self):
+        ICP = self.env["ir.config_parameter"]
+        auto_post = ICP.sudo().get_param("import_statement_edi_auto_post")
         statement_import = self.env["account.statement.import"].create(
             [
                 {
@@ -27,3 +29,5 @@ class EdiBankStatementImportProcess(Component):
         statement = self.env["account.bank.statement"].browse(action.get("res_id"))
         if not (statement.state and statement.state in ["posted", "open"]):
             raise ValueError(_("The bank statement could not be validated."))
+        if auto_post:
+            statement.button_post()

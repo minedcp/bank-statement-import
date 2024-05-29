@@ -2,6 +2,7 @@
 # @author: Simon Gonzalez
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _
+from odoo.tools import str2bool
 
 from odoo.addons.component.core import Component
 
@@ -13,8 +14,8 @@ class EdiBankStatementImportProcess(Component):
     _inherit = "edi.component.input.mixin"
 
     def process(self):
-        ICP = self.env["ir.config_parameter"]
-        auto_post = ICP.sudo().get_param("import_statement_edi_auto_post")
+        ir_config = self.env["ir.config_parameter"].sudo()
+        auto_post = str2bool(ir_config.get_param("import_statement_edi_auto_post"))
         statement_import = self.env["account.statement.import"].create(
             [
                 {

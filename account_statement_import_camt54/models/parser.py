@@ -58,11 +58,19 @@ class CamtParser(models.AbstractModel):
         isr_number = node.xpath(
             "./ns:RmtInf/ns:Strd/ns:CdtrRefInf/ns:Ref", namespaces={"ns": ns}
         )
+        is_pmdd = node.xpath(
+            "./ns:BkTxCd/ns:Fmly/ns:SubFmlyCd", namespaces={"ns": ns}
+        )
         if len(isr_number):
             transaction["payment_ref"] = isr_number[0].text
             partner_ref = self._get_partner_ref(isr_number[0].text)
             if partner_ref:
                 transaction["partner_ref"] = partner_ref
+        elif is_pmdd == 'PMDD':
+            #use EndToEndId if direct debit camt054
+            transaction["payment_ref"] = node.xpath(
+                "./ns:Refs/ns:EndToEndId",
+                )[0].text
         else:
             xpath_exprs = [
                 "./ns:RmtInf/ns:Ustrd|./ns:RtrInf/ns:AddtlInf",

@@ -289,10 +289,21 @@ class CamtParser(models.AbstractModel):
                 "./ns:NtryDtls/ns:RmtInf/ns:Strd/ns:CdtrRefInf/ns:Ref",
                 "./ns:NtryDtls/ns:Btch/ns:PmtInfId",
                 "./ns:NtryDtls/ns:TxDtls/ns:Refs/ns:AcctSvcrRef",
+                "./ns:AcctSvcrRef",
             ],
             transaction,
             "ref",
         )
+        self.add_value_from_node(
+            ns,
+            node,
+            [
+                "./ns:AddtlNtryInf",
+            ],
+            transaction,
+            "payment_ref",
+        )
+
 
         # enrich the notes with some more infos when they are available
         self.add_value_from_node(
